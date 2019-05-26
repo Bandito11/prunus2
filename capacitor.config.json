@@ -1,0 +1,7 @@
+{
+  "appId": "xyz.abey.prunus",
+  "appName": "Abey",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}

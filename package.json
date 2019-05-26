@@ -1,0 +1,31 @@
+{
+  "name": "prunus2",
+  "private": true,
+  "version": "0.0.1",
+  "description": "prunus2",
+  "license": "MIT",
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "stencil build",
+    "start": "stencil build --dev --watch --serve",
+    "test": "stencil test --spec --e2e",
+    "test.watch": "stencil test --spec --e2e --watch"
+  },
+  "dependencies": {
+    "@capacitor/cli": "^1.0.0",
+    "@capacitor/core": "^1.0.0",
+    "@capacitor/ios": "^1.0.0",
+    "@ionic/core": "one",
+    "localforage": "^1.7.3",
+    "lokijs": "^1.5.6"
+  },
+  "devDependencies": {
+    "@stencil/core": "one",
+    "@types/jest": "^24.0.13",
+    "@types/localforage": "0.0.34",
+    "@types/lokijs": "^1.5.2",
+    "workbox-build": "4.3.1"
+  }
+}
