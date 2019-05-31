@@ -1,7 +1,7 @@
 import { Component, h, State } from '@stencil/core';
 import { ILog } from '../../common/models';
 import { formatTime, dateToString } from '../../common/formatted';
-import { update, insert, getLogsView, remove } from '../../services/prunusdb.service';
+import { update, insert, getLogsView, remove, clear } from '../../services/prunusdb.service';
 
 
 @Component({
@@ -10,12 +10,12 @@ import { update, insert, getLogsView, remove } from '../../services/prunusdb.ser
 })
 export class AppHome {
   @State() logs: ILog & Partial<LokiObj> [];
-  timer: number;
+  // timer: number;
   @State() toggle;
   currentDate = '';
 
   componentWillLoad() {
-    this.timer = 0;
+    // this.timer = 0;
     this.logs = [];
     let temp;
     const interval = setInterval(() => {
@@ -30,20 +30,20 @@ export class AppHome {
 
   getLogs() {
     try {
-      const view = getLogsView();
-      view.applySort((rec1, rec2) => {
+      const logs = getLogsView();
+      logs.applySort((rec1, rec2) => {
         if (rec1.$loki > rec2.$loki) {
           return -1;
         }
       });
-      return this.addElapsedTime(view.data());
+      return this.addElapsedTime(logs.data());
     } catch (error) {
       return error;
     }
   }
 
   addElapsedTime(logs: ILog[]) {
-    const res = logs.map((log, index) => {
+    return logs.map((log, index) => {
       if (index === 0) {
         return {
           ...log,
@@ -64,7 +64,6 @@ export class AppHome {
         };
       }
     });
-    return res;
   }
 
   showNotes(id) {
@@ -72,20 +71,24 @@ export class AppHome {
       this.toggle = '';
     } else {
       this.toggle = id;
-      setTimeout(() => {
+      //setTimeout(() => {
         document.querySelector('textarea').focus();
-      }, 1000);
+      //}, 1000);
     }
   }
 
   addNotes(opts: { id: number; log: ILog, description }) {
-    clearTimeout(this.timer);
+    // clearTimeout(this.timer);
     const log = {
       ...opts.log,
       description: opts.description.target.value.trim()
     };
-    update(log);
-    this.updateNotes(opts);
+    const response = update(log);
+    if (response.success) {
+      this.updateNotes(opts);
+    } else {
+      console.error(response.error);
+    }
   }
 
   updateNotes(opts: { id: number, description }) {
@@ -97,27 +100,45 @@ export class AppHome {
     const date = new Date();
     const time = formatTime(date);
     const currentDate = dateToString(date);
-    try {
-      insert({ date: currentDate, time: time, description: '', dateObj: '' });
-    } catch (error) {
-      console.error(error);
-    }
-    this.logs.unshift({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
-    this.logs = [...this.addElapsedTime(this.logs)];
+      const response = insert({ date: currentDate, time: time, description: '', dateObj: '' });
+      if(response.success) {
+        this.logs.unshift({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
+        this.logs = [...this.addElapsedTime(this.logs)];
+      } else {
+        console.error(response.error); 
+      }
   }
 
 
   removeLog(log): void {
-    this.logs = [...remove(log).data.data()];
+    const response = remove(log);
+    if(response.success) {
+       this.logs = [...response.data.data()];
+    } else {
+       console.error(response.error);
+    }
     document.querySelector('ion-item-sliding').close();
   }
 
+  clearLogs(): void {
+    // TODO: Add a message with a warning to clear all data from collection
+    const response = clear();
+    if(response.success){
+       this.logs = [];
+    } else {
+       console.error(response.error);
+    }
+  }
+  
   render() {
     return [
       <ion-header >
         <ion-toolbar color="primary">
           <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button onClick={() => this.clearLogs()}>Clear</ion-button>
           </ion-buttons>
           <ion-title>
             Home
