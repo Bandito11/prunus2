@@ -2,10 +2,7 @@ import { ILog, IResponse } from '../common/models';
 import { CapacitorStorageAdapter } from './adapter';
 declare let loki;
 
-/**
- * Collections
- */
-export let logsColl: Collection<ILog>;
+ let logsColl: Collection<ILog>;
 
 const capacitorStorageAdapter = new CapacitorStorageAdapter();
 
@@ -55,7 +52,7 @@ export function getLogs(date) {
     } else {
       response = {
         ...response,
-        error: 'There was no record on DB for this date'
+        error: 'There were no records on DB for this date.'
       };
       return response;
     }
@@ -90,7 +87,7 @@ export function insert(log: ILog) {
   if (results) {
     response = {
       ...response,
-      error: 'Cannot add log already created in the database.'
+      error: 'Cannot add log as it is already created in the database.'
     };
   } else {
     logsColl.insertOne(log);
@@ -142,7 +139,7 @@ export function update(log: ILog) {
   return response;
 }
 
-export function remove(log: LokiObj): IResponse<DynamicView<ILog>> {
+export function remove(log: LokiObj & ILog): IResponse<DynamicView<ILog>> {
   let response: IResponse<DynamicView<ILog>> = {
     success: false,
     error: null,
