@@ -9,7 +9,7 @@ import { update, insert, getLogsView, remove } from '../../services/prunusdb.ser
   styleUrl: 'app-home.css'
 })
 export class AppHome {
-  @State() logs: ILog[];
+  @State() logs: ILog & Partial<LokiObj> [];
   timer: number;
   @State() toggle;
   currentDate = '';
@@ -36,15 +36,9 @@ export class AppHome {
           return -1;
         }
       });
-      let logs;
-      if (navigator.userAgent.match('Firefox') || !navigator.userAgent.match('Pixel 3')) {
-        logs = this.addElapsedTime(view.data().reverse());
-      } else {
-        logs = this.addElapsedTime(view.data());
-      }
-      return logs;
+      return this.addElapsedTime(view.data());
     } catch (error) {
-      return;
+      return error;
     }
   }
 
