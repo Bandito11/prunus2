@@ -3,6 +3,7 @@ export interface ILog {
   time: string;
   description: string;
   dateObj: string;
+  elapsedTime?: string;
 }
 
 export interface IResponse<T> {

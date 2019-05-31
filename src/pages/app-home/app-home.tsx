@@ -1,8 +1,7 @@
 import { Component, h, State } from '@stencil/core';
 import { ILog } from '../../common/models';
 import { formatTime, dateToString } from '../../common/formatted';
-import { Element } from '@stencil/core';
-import { update, insert, getLogsView } from '../../services/prunusdb.service';
+import { update, insert, getLogsView, remove } from '../../services/prunusdb.service';
 
 
 @Component({
@@ -10,12 +9,10 @@ import { update, insert, getLogsView } from '../../services/prunusdb.service';
   styleUrl: 'app-home.css'
 })
 export class AppHome {
-  @State() logs: any[];
+  @State() logs: ILog[];
   timer: number;
   @State() toggle;
   currentDate = '';
-
-  @Element() notesElement: HTMLElement;
 
   componentWillLoad() {
     this.timer = 0;
@@ -82,7 +79,7 @@ export class AppHome {
     } else {
       this.toggle = id;
       setTimeout(() => {
-        this.notesElement.focus();
+        document.querySelector('textarea').focus();
       }, 1000);
     }
   }
@@ -115,6 +112,12 @@ export class AppHome {
     this.logs = [...this.addElapsedTime(this.logs)];
   }
 
+
+  removeLog(log): void {
+    this.logs = [...remove(log).data.data()];
+    document.querySelector('ion-item-sliding').close();
+  }
+
   render() {
     return [
       <ion-header >
@@ -131,27 +134,34 @@ export class AppHome {
         <ion-button onClick={() => this.logTime()} fill="outline" expand="block">Log Time</ion-button>
         <ion-list lines="none">
           {this.logs.map((log, i) =>
-            <ion-item>
-              <ion-label>
-                <h1>{log.date}</h1>
-                <h3>{log.time}</h3>
-                {log.elapsedTime
-                  ? <h6>Elapsed time from last log: {log.elapsedTime}</h6>
+            <ion-item-sliding>
+              <ion-item>
+                <ion-label>
+                  <h1>{log.date}</h1>
+                  <h3>{log.time}</h3>
+                  {log.elapsedTime
+                    ? <h6>Elapsed time from last log: {log.elapsedTime}</h6>
+                    : ''
+                  }
+                  {log.description
+                    ? <p>{log.description}</p>
+                    : ''
+                  }
+                </ion-label>
+                <ion-button fill="clear" onClick={() => this.showNotes(log.time)} >
+                  <ion-icon name="paper"></ion-icon>
+                </ion-button>
+                {this.toggle === log.time
+                  ? <textarea onKeyUp={(event: UIEvent) => this.addNotes({ id: i, log: log, description: event })} > {log.description}</textarea>
                   : ''
                 }
-                {log.description
-                  ? <p>{log.description}</p>
-                  : ''
-                }
-              </ion-label>
-              <ion-button fill="clear" onClick={() => this.showNotes(log.time)} >
-                <ion-icon name="paper"></ion-icon>
-              </ion-button>
-              {this.toggle === log.time
-                ? <textarea onKeyUp={(event: UIEvent) => this.addNotes({ id: i, log: log, description: event })} > {log.description}</textarea>
-                : ''
-              }
-            </ion-item >
+              </ion-item>
+              <ion-item-options side="end">
+                <ion-item-option color="Danger" expandable onClick={() => this.removeLog(log)}>
+                  Remove
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
           )}
         </ion-list>
       </ion-content>

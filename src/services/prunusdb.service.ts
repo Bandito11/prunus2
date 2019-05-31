@@ -24,9 +24,9 @@ const lokiOptions: Partial<LokiConfigOptions> = {
 
 let prunusDB: Loki = new loki('prunus.db', lokiOptions);;
 
-export function getLogsView(): DynamicView<ILog>{
+export function getLogsView(): DynamicView<ILog> {
   try {
-    return logsColl.addDynamicView('students');
+    return logsColl.addDynamicView('logs');
   } catch (error) {
     return undefined;
   }
@@ -142,16 +142,16 @@ export function update(log: ILog) {
   return response;
 }
 
-export function remove(id: LokiObj): IResponse<string> {
-  let response: IResponse<string> = {
+export function remove(log: LokiObj): IResponse<DynamicView<ILog>> {
+  let response: IResponse<DynamicView<ILog>> = {
     success: false,
     error: null,
     data: undefined,
     dateStamp: new Date().toString()
   };
-  const results = logsColl.find({
+  const results = logsColl.findOne({
     $loki: {
-      $eq: id
+      $eq: log.$loki
     }
   });
   if (results) {
@@ -159,12 +159,14 @@ export function remove(id: LokiObj): IResponse<string> {
     response = {
       ...response,
       success: true,
-      data: 'Log was removed successfully!'
+      error: 'Log was removed successfully!',
+      data: logsColl.addDynamicView('logs')
     };
   } else {
     response = {
       ...response,
-      error: 'This record doesn\'t exist on database.'
+      error: 'This record doesn\'t exist on database.',
+      data: logsColl.addDynamicView('logs')
     };
   }
   return response;
