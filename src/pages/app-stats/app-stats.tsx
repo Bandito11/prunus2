@@ -1,6 +1,6 @@
 import { Component, h, State } from '@stencil/core';
 import { dateToString, toISOFormat } from '../../common/formatted';
-import { getLogs } from '../../prunusdb.service';
+import { getLogs } from '../../services/prunusdb.service';
 import { IResponse } from '../../common/models';
 
 @Component({
@@ -80,6 +80,7 @@ export class AppStats {
     return [
       <ion-header>
         <ion-toolbar color="primary">
+          <ion-title>Stats</ion-title>
         <ion-buttons slot="start">
             <ion-menu-button></ion-menu-button>
           </ion-buttons>

@@ -2,7 +2,7 @@ import { Component, h, State } from '@stencil/core';
 import { ILog } from '../../common/models';
 import { formatTime, dateToString } from '../../common/formatted';
 import { Element } from '@stencil/core';
-import { getAllLogs, update, insert } from '../../prunusdb.service';
+import { update, insert, getLogsView } from '../../services/prunusdb.service';
 
 
 @Component({
@@ -20,9 +20,11 @@ export class AppHome {
   componentWillLoad() {
     this.timer = 0;
     this.logs = [];
+    let temp;
     const interval = setInterval(() => {
-      this.logs = this.getLogs();
-      if (this.logs) {
+      temp = this.getLogs();
+      if (temp) {
+        this.logs = temp;
         clearInterval(interval);
       }
     }, 1000);
@@ -31,7 +33,18 @@ export class AppHome {
 
   getLogs() {
     try {
-      const logs = this.addElapsedTime(getAllLogs());
+      const view = getLogsView();
+      view.applySort((rec1, rec2) => {
+        if (rec1.$loki > rec2.$loki) {
+          return -1;
+        }
+      });
+      let logs;
+      if (navigator.userAgent.match('Firefox') || !navigator.userAgent.match('Pixel 3')) {
+        logs = this.addElapsedTime(view.data().reverse());
+      } else {
+        logs = this.addElapsedTime(view.data());
+      }
       return logs;
     } catch (error) {
       return;
@@ -78,7 +91,7 @@ export class AppHome {
     clearTimeout(this.timer);
     const log = {
       ...opts.log,
-      description: opts.description.target.value
+      description: opts.description.target.value.trim()
     };
     update(log);
     this.updateNotes(opts);
@@ -86,27 +99,20 @@ export class AppHome {
 
   updateNotes(opts: { id: number, description }) {
     this.logs[opts.id].description = opts.description.target.value;
+    this.logs = [...this.logs];
   }
 
   logTime() {
     const date = new Date();
     const time = formatTime(date);
     const currentDate = dateToString(date);
-    // this.logs.push({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
     try {
       insert({ date: currentDate, time: time, description: '', dateObj: '' });
     } catch (error) {
       console.error(error);
     }
-    const logs = [{
-      date: currentDate,
-      time: time,
-      description: '',
-      dateObj: new Date().toString()
-    },
-    ...this.logs
-    ];
-    this.logs = [...this.addElapsedTime(logs)];
+    this.logs.unshift({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
+    this.logs = [...this.addElapsedTime(this.logs)];
   }
 
   render() {
@@ -140,15 +146,15 @@ export class AppHome {
               </ion-label>
               <ion-button fill="clear" onClick={() => this.showNotes(log.time)} >
                 <ion-icon name="paper"></ion-icon>
-              </ion-button >
+              </ion-button>
               {this.toggle === log.time
-                ? <textarea onKeyDown={(event: UIEvent) => this.addNotes({ id: i, log: log, description: event })} > {log.description}</textarea>
-                : <div></div>
+                ? <textarea onKeyUp={(event: UIEvent) => this.addNotes({ id: i, log: log, description: event })} > {log.description}</textarea>
+                : ''
               }
             </ion-item >
           )}
-        </ion-list >
-      </ion-content >
+        </ion-list>
+      </ion-content>
     ];
   }
 }

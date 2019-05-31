@@ -12,6 +12,8 @@ log.txt
 *.sublime-project
 *.sublime-workspace
 
+prunus-key.txt
+prunus-android-keystore.jks
 .stencil/
 .idea/
 .vscode/
