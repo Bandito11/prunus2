@@ -87,7 +87,7 @@ export function insert(log: ILog) {
   if (results) {
     response = {
       ...response,
-      error: 'Cannot add log as it is already created in the database.'
+      error: 'Entry is already on DB in the database.'
     };
   } else {
     logsColl.insertOne(log);
@@ -119,15 +119,13 @@ export function update(log: ILog) {
       logsColl.update(log);
       response = {
         ...response,
-        success: true,
-        data: 'Log was updated successfully!'
+        success: true
       };
     } else {
       logsColl.insertOne(log);
       response = {
         ...response,
-        success: true,
-        data: 'Log was added to Database successfully!'
+        success: true
       };
     }
   } catch (error) {
