@@ -156,7 +156,7 @@ export function remove(log: LokiObj & ILog): IResponse<DynamicView<ILog>> {
     response = {
       ...response,
       success: true,
-      error: 'Log was removed successfully!',
+      error: null,
       data: logsColl.addDynamicView('logs')
     };
   } else {
@@ -164,6 +164,29 @@ export function remove(log: LokiObj & ILog): IResponse<DynamicView<ILog>> {
       ...response,
       error: 'This record doesn\'t exist on database.',
       data: logsColl.addDynamicView('logs')
+    };
+  }
+  return response;
+}
+
+export function clear(log: LokiObj & Partial<LokiObj>[] ): IResponse<DynamicView<ILog>> {
+  let response: IResponse<undefined> = {
+    success: false,
+    error: null,
+    data: undefined,
+    dateStamp: new Date().toString()
+  };
+  try {
+    logsColl.clear();
+    response = {
+      ...response,
+      success: true,
+      error: null
+    };
+  } catch(error) {
+    response = {
+      ...response,
+      error: error
     };
   }
   return response;
