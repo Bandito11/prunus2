@@ -10,21 +10,24 @@ import { update, insert, getLogsView, remove, clear } from '../../services/prunu
 })
 export class AppHome {
   @State() logs: ILog & Partial<LokiObj> [];
-  // timer: number;
   @State() toggle;
   currentDate = '';
-
+  // timer: number; To delete
+  
   componentWillLoad() {
     // this.timer = 0;
-    this.logs = [];
-    let temp;
-    const interval = setInterval(() => {
-      temp = this.getLogs();
-      if (temp) {
-        this.logs = temp;
-        clearInterval(interval);
-      }
-    }, 1000);
+    // this.logs = [];
+    // let temp;
+    // const interval = setInterval(() => {
+    //   temp = this.getLogs();
+    //   if (temp) {
+    //     this.logs = temp;
+    //     clearInterval(interval);
+    //   }
+    // }, 1000);
+    
+    // TODO: Delete code after this line if the code update doesn't work as expected.
+    this.logs = this.getLogs();
   }
 
 
