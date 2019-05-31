@@ -19,11 +19,22 @@ const lokiOptions: Partial<LokiConfigOptions> = {
   }
 };
 
-let prunusDB: Loki = new loki('prunus.db', lokiOptions);;
+let prunusDB: Loki = new loki('prunus.db', lokiOptions);
 
-export function getLogsView(): DynamicView<ILog> {
+getLogsView(): Promise<DynamicView<ILog>> {
+ return new Promise( (resolve, reject) => {
+  set interval = setInterval( () = {
+    if(logsColl) {
+      resolve(logsColl.addDynamicView('logs'));
+    }
+   }, 1000 };
+  }) ;
+}
+
+export async function getLogsView(): DynamicView<ILog> {
   try {
-    return logsColl.addDynamicView('logs');
+    const view = await getLogsView();
+    return view;
   } catch (error) {
     return undefined;
   }
