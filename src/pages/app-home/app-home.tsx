@@ -9,35 +9,26 @@ import { update, insert, getLogsView, remove, clear } from '../../services/prunu
   styleUrl: 'app-home.css'
 })
 export class AppHome {
-  @State() logs: ILog & Partial<LokiObj> [];
+  @State() logs: (ILog & Partial<LokiObj>)[];
   @State() toggle;
   currentDate = '';
-  // timer: number; To delete
-  
-  componentWillLoad() {
-    // this.timer = 0;
-    // this.logs = [];
-    // let temp;
-    // const interval = setInterval(() => {
-    //   temp = this.getLogs();
-    //   if (temp) {
-    //     this.logs = temp;
-    //     clearInterval(interval);
-    //   }
-    // }, 1000);
-    
-    // TODO: Delete code after this line if the code update doesn't work as expected.
-    this.logs = this.getLogs();
+
+  async componentWillLoad() {
+    this.logs = await this.getLogs();
   }
 
 
-  getLogs() {
+  async getLogs() {
     try {
-      const logs = getLogsView();
+      const logs = await getLogsView();
       logs.applySort((rec1, rec2) => {
         if (rec1.$loki > rec2.$loki) {
           return -1;
         }
+        if (rec1.$loki < rec2.$loki) {
+          return 1;
+        }
+        return 0;
       });
       return this.addElapsedTime(logs.data());
     } catch (error) {
@@ -74,14 +65,13 @@ export class AppHome {
       this.toggle = '';
     } else {
       this.toggle = id;
-      //setTimeout(() => {
+      setTimeout(() => {
         document.querySelector('textarea').focus();
-      //}, 1000);
+      }, 50);
     }
   }
 
   addNotes(opts: { id: number; log: ILog, description }) {
-    // clearTimeout(this.timer);
     const log = {
       ...opts.log,
       description: opts.description.target.value.trim()
@@ -103,36 +93,54 @@ export class AppHome {
     const date = new Date();
     const time = formatTime(date);
     const currentDate = dateToString(date);
-      const response = insert({ date: currentDate, time: time, description: '', dateObj: '' });
-      if(response.success) {
-        this.logs.unshift({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
-        this.logs = [...this.addElapsedTime(this.logs)];
-      } else {
-        console.error(response.error); 
-      }
+    const response = insert({ date: currentDate, time: time, description: '', dateObj: '' });
+    if (response.success) {
+      this.logs.unshift({ date: currentDate, time: time, description: '', dateObj: new Date().toString() });
+      this.logs = [...this.addElapsedTime(this.logs)];
+    } else {
+      console.error(response.error);
+    }
   }
 
 
   removeLog(log): void {
     const response = remove(log);
-    if(response.success) {
-       this.logs = [...response.data.data()];
+    if (response.success) {
+      this.logs = [...response.data.data()];
     } else {
-       console.error(response.error);
+      console.error(response.error);
     }
     document.querySelector('ion-item-sliding').close();
   }
 
-  clearLogs(): void {
-    // TODO: Add a message with a warning to clear all data from collection
-    const response = clear();
-    if(response.success){
-       this.logs = [];
-    } else {
-       console.error(response.error);
-    }
+  async clearLogs() {
+    const alertController = document.querySelector('ion-alert-controller');
+    await alertController.componentOnReady();
+
+    const alert = await alertController.create({
+      header: 'Warning!',
+      message: 'Are you sure you want to delete all the logs?',
+      buttons: [
+        {
+          text: 'No',
+          role: 'cancel',
+          cssClass: 'secondary'
+        }, {
+          text: 'Yes',
+          handler: () => {
+            const response = clear();
+            if (response.success) {
+              this.logs = [];
+            } else {
+              console.error(response.error);
+            }
+          }
+        }
+      ]
+    });
+    return await alert.present();
   }
-  
+
   render() {
     return [
       <ion-header >
@@ -141,6 +149,7 @@ export class AppHome {
             <ion-menu-button></ion-menu-button>
           </ion-buttons>
           <ion-buttons slot="end">
+            <ion-alert-controller></ion-alert-controller>
             <ion-button onClick={() => this.clearLogs()}>Clear</ion-button>
           </ion-buttons>
           <ion-title>

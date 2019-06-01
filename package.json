@@ -1,7 +1,7 @@
 {
   "name": "prunus2",
   "private": true,
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "Abey app",
   "files": [
     "dist/"

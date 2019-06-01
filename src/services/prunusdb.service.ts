@@ -2,7 +2,7 @@ import { ILog, IResponse } from '../common/models';
 import { CapacitorStorageAdapter } from './adapter';
 declare let loki;
 
- let logsColl: Collection<ILog>;
+let logsColl: Collection<ILog>;
 
 const capacitorStorageAdapter = new CapacitorStorageAdapter();
 
@@ -21,23 +21,17 @@ const lokiOptions: Partial<LokiConfigOptions> = {
 
 let prunusDB: Loki = new loki('prunus.db', lokiOptions);
 
-getLogsView(): Promise<DynamicView<ILog>> {
- return new Promise( (resolve, reject) => {
-  set interval = setInterval( () = {
-    if(logsColl) {
-      resolve(logsColl.addDynamicView('logs'));
-    }
-   }, 1000 };
-  }) ;
-}
-
-export async function getLogsView(): DynamicView<ILog> {
-  try {
-    const view = await getLogsView();
-    return view;
-  } catch (error) {
-    return undefined;
-  }
+export function getLogsView(): Promise<DynamicView<ILog>> {
+  return new Promise((resolve, reject) => {
+    let count = 0;
+    setInterval(() => {
+      if (logsColl) {
+        resolve(logsColl.addDynamicView('logs'));
+      } else if (count === 30) {
+        reject(`Couldn't create database on device.`)
+      }
+    }, 1000);
+  });
 }
 
 export function getLogs(date) {
@@ -107,6 +101,7 @@ export function insert(log: ILog) {
       success: true
     };
   }
+  return response;
 }
 
 
@@ -178,7 +173,7 @@ export function remove(log: LokiObj & ILog): IResponse<DynamicView<ILog>> {
   return response;
 }
 
-export function clear(log: LokiObj & Partial<LokiObj>[] ): IResponse<DynamicView<ILog>> {
+export function clear(): IResponse<DynamicView<ILog>> {
   let response: IResponse<undefined> = {
     success: false,
     error: null,
@@ -192,7 +187,7 @@ export function clear(log: LokiObj & Partial<LokiObj>[] ): IResponse<DynamicView
       success: true,
       error: null
     };
-  } catch(error) {
+  } catch (error) {
     response = {
       ...response,
       error: error
