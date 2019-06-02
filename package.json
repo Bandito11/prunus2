@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "stencil build",
+    "docs": "stencil build --docs readme.md",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watch"
