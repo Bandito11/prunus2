@@ -9,9 +9,7 @@ import { HTMLStencilElement, JSXBase } from '@stencil/core/internal';
 
 
 export namespace Components {
-  interface AppHome {
-    'currentDate': string;
-  }
+  interface AppHome {}
   interface AppRoot {}
   interface AppStats {}
 }
@@ -44,9 +42,7 @@ declare global {
 }
 
 declare namespace LocalJSX {
-  interface AppHome extends JSXBase.HTMLAttributes<HTMLAppHomeElement> {
-    'currentDate'?: string;
-  }
+  interface AppHome extends JSXBase.HTMLAttributes<HTMLAppHomeElement> {}
   interface AppRoot extends JSXBase.HTMLAttributes<HTMLAppRootElement> {}
   interface AppStats extends JSXBase.HTMLAttributes<HTMLAppStatsElement> {}
 
