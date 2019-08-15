@@ -5,13 +5,6 @@
 <!-- Auto Generated Below -->
 
 
-## Properties
-
-| Property      | Attribute      | Description | Type     | Default |
-| ------------- | -------------- | ----------- | -------- | ------- |
-| `currentDate` | `current-date` |             | `string` | `''`    |
-
-
 ## Dependencies
 
 ### Depends on
