@@ -15,7 +15,7 @@ export class AppRoot {
   render() {
     return [
       <ion-app>
-        <ion-router useHash={false} >
+        <ion-router root={window.location.pathname} useHash={false} >
           <ion-route url="/" component="app-home" />
           <ion-route url="/stats" component="app-stats" />
         </ion-router>

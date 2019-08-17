@@ -11,7 +11,8 @@
     "docs": "stencil build --docs readme.md",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
-    "test.watch": "stencil test --spec --e2e --watch"
+    "test.watch": "stencil test --spec --e2e --watch",
+    "electron-serve":"npm run build && npx cap copy && npx cap open electron"
   },
   "dependencies": {
     "@capacitor/android": "^1.0.0",
