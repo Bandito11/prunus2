@@ -27,12 +27,12 @@
   <!-- <script nomodule src="./build/app.js"></script> -->
   <script>
     const head = document.querySelector('head');
-    const esm = document.createElement('script');
     const noEsm = document.createElement('script');
     if (navigator.userAgent.match('Electron')) {
       noEsm.src = './build/app.js';
       head.appendChild(noEsm);
     } else {
+      const esm = document.createElement('script');
       esm.type = 'module';
       esm.src = './build/app.esm.js';
       head.appendChild(esm);
