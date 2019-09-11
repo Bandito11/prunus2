@@ -15,19 +15,17 @@
     "electron-serve": "npm run build && npx cap copy && npx cap open electron"
   },
   "dependencies": {
-    "@capacitor/android": "^1.0.0",
-    "@capacitor/cli": "^1.1.1",
-    "@capacitor/core": "^1.1.1",
-    "@capacitor/ios": "^1.0.0",
-    "@ionic/core": "^4.7.4",
-    "capacitor-data-storage-sqlite": "^0.0.10",
-    "localforage": "^1.7.3",
-    "lokijs": "^1.5.6"
+    "@capacitor/android": "^1.2.0",
+    "@capacitor/cli": "^1.2.0",
+    "@capacitor/core": "^1.2.0",
+    "@capacitor/ios": "^1.2.0",
+    "@ionic/core": "^4.9.0",
+    "capacitor-data-storage-sqlite": "^1.2.1",
+    "lokijs": "^1.5.7"
   },
   "devDependencies": {
-    "@stencil/core": "^1.2.5",
-    "@types/jest": "^24.0.13",
-    "@types/localforage": "^0.0.34",
+    "@stencil/core": "^1.4.0",
+    "@types/jest": "^24.0.18",
     "@types/lokijs": "^1.5.2",
     "workbox-build": "^4.3.1"
   }

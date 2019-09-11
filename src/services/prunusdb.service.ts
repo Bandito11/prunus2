@@ -1,25 +1,26 @@
 import { ILog, IResponse } from '../common/models';
 import { CapacitorStorageAdapter } from './adapter';
-declare let loki;
+declare const loki;
 
 let logsColl: Collection<ILog>;
 
 const capacitorStorageAdapter = new CapacitorStorageAdapter();
+const partioningAdapter = new loki.LokiPartitioningAdapter(capacitorStorageAdapter, { paging: true });
 
 const lokiOptions: Partial<LokiConfigOptions> = {
   autosave: true,
   autoload: true,
-  adapter: capacitorStorageAdapter,
+  adapter: partioningAdapter,
   autoloadCallback: () => {
     if (!logsColl) {
-      logsColl = prunusDB.addCollection<ILog>('logs');
+      logsColl = db.addCollection<ILog>('logs');
     } else {
-      logsColl = prunusDB.getCollection<ILog>('logs');
+      logsColl = db.getCollection<ILog>('logs');
     }
   }
 };
 
-let prunusDB: Loki = new loki('prunus.db', lokiOptions);
+const db: Loki = new loki('prunus.db', lokiOptions);
 
 export function getLogsView(): Promise<DynamicView<ILog>> {
   return new Promise((resolve, reject) => {
